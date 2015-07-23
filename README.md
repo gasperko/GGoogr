@@ -39,6 +39,7 @@ Useg : php ggoog.php [options]
   php ggoog.php --subd=example.com --o=examplesubs.txt --proxy=127.0.0.1:80
 
 The maker dose not take any responsibility of the uses of this tool.
+
 Who I'm I, I'm a 17y student from the US :smirk: .
 If you like my tool, please help me by dontaing throw BTC:
 126RZdXsZqK6WJdUqMU4BDVKPr17ZrpPwh
