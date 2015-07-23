@@ -117,7 +117,7 @@ function is_ipv4($string)
  }
 function testproxyin($proxy)
 {
-	; // Separate IP and port
+	// Separate IP and port
 
 	if(($splited = @explode(':',$proxy)) == true && is_ipv4($splited[0])){
 		if (!filter_var($splited[0],FILTER_VALIDATE_IP)){
