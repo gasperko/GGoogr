@@ -1,19 +1,6 @@
 # GGoogr
 GGoogr is a google searching tool for pen testers, and hackers. It's a smart tool to safe time and good for massing.
 
- .oOOOo.   .oOOOo.
-.O     o  .O     o
-o         o
-O         O
-O   .oOOo O   .oOOo .oOo. .oOo. .oOoO `ooOo.
-o.      O o.      O O   o O   o o   O  o
- O.    oO  O.    oO o   O o   O O   o  O
-  `OooO'    `OooO'  `OoO' `OoO' `OoOo  o
-                                    O
-   3Turr : a.x.l[at]outlook.com  OoO'
-............................................
-
-
 Useg : php ggoog.php [options]
 
   -h,--help            Prints this help menu.
