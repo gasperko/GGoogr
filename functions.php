@@ -7,13 +7,21 @@ function forcein($stage=false)
 	
 	if (($out == null || $out == '' ) && $stage == true)
 	{
-		echo "[ERROR] Wrong input !\n[+]=> ";
-		$out = read(1);
+		echo "[ERROR] Wrong input !\n[*]: ";
+		$out = forcein(1);
 	}
 	return $out;
 }
 
-
+function proxyxin($proxyin){
+	if (testproxyin($proxyin)){
+		$proxy = $proxyin;
+	}else{
+		echo "[ERROR] Wrong input !\n[*]: ";
+		$proxy=proxyxin(forcein(1));
+	}
+	return $proxy;
+}
 function ggrap($text,$marqueurDebutLien,$marqueurFinLien,$i=1){
     $ar0=@explode($marqueurDebutLien, $text);
     $ar1=@explode($marqueurFinLien, $ar0[$i]);
@@ -52,46 +60,25 @@ if (eregi(PHP_OS,'nix||Darwin')){
 @shell_exec('cls');
 }
 }
-function helpm()
-{
-	startm();
-	echo "\r\nUseg : php ggoog.php [options]
-
-  -h,--help            Prints this help menu.
-
-  -d,--dork            Set the searching Dork.
-
-  -feach,--foreach     Run's a spicifec command for each resualt.
-                          DOMINE = The resualt url or domine.
-                       EX: -feach=\"python exploit.py DOMINE\"
-  
-  -sd,--sdomine        Output a specifiec domine only.
-
-  -tor,--tor           Connect to the tor network (defualt port is 9150)
-                       Most the time Google block's the Tor network IPs.
-
-  -tp,torport          Change the port to connect to the Tor network.
-
-  --proxy              Connect to a proxy server to bypass Google's banning
-                       (You will be asked to use it,if google ban you)
-                        EX: --proxy=127.0.0.1:8080
-
-
-  -o,--output          Save the results to a file.
-  
-  -subd,--subdomins    Search for the subdomins of one domine.
-  
-  -honly,--hostonly    Get only the host name.
-  
-  -donly,--domineonly  Get only the domine url.
- 
- 
- EX:
- 
-  php ggoog.php --d=\"dork example\" -feach=\"python exploit.py DOMINE\"
-  php ggoog.php --sd=example.com --d=\"dork example\" --o=output.txt --donly
-  php ggoog.php --subd=example.com --o=examplesubs.txt --proxy=127.0.0.1:80
-
+function helpm(){
+	echo "Useg : php ggoog.php [options]
+ -h,--help: prints this help menu.
+ -d,--dork: set the searching Dork.
+ -feach,--foreach: run command for each resualt(DOMINE = resualt)
+ -csqli,--checksqli: check for SQLI (will add ').
+ -nor,--norepeat: to filter the results with no repeating.
+ -sd,--sdomine: output a specifiec domine only.
+ -tor,--tor: connect to the tor network (port 9150).
+ -tp,torport: change the port to connect to the Tor network.
+ --proxy: connect to a proxy server (host:port).
+ -o,--output: save the results to a file.
+ -subd,--subdomins: search for the subdomins of one domine.
+ -honly,--hostonly: get host only .
+ -donly,--domineonly: get domine URL only .
+EX:
+php ggoog.php --d=\"dork example\" --honly -feach=\"python exploit.py DOMINE\"
+php ggoog.php --d=\"dork example\" -o=output.txt --donly
+php ggoog.php --subd=example.com -o=examplesubs.txt --proxy=127.0.0.1:80 
 ";
 die();
 }
@@ -126,7 +113,7 @@ function testproxyin($proxy)
 		if($con = @fsockopen($splited[0], $splited[1], $eroare, $eroare_str, 3)) 
 		{
 			@fclose($con); // Close the socket handle
-			echo "[+] connction succeed.\n";
+			
 			return true;
 		}else{
 			return false;

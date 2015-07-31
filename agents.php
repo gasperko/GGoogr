@@ -38,7 +38,7 @@ function array_random( array $array )
 
 function osx_version( )
 {
-	return "10_" . rand( 5, 7 ) . '_' . rand( 0, 9 );
+	return "" . rand( 9, 11 ) . "_" . rand( 5, 9 ) . '_' . rand( 0, 9 );
 }
 
 function firefox( $arch )
@@ -54,14 +54,21 @@ function firefox( $arch )
 	switch ( $arch )
 	{
 	case 'lin':
-		return "Mozilla/5.0 (X11; Linux i586; rv:" . rand( 5, 7 ) . ".0) $ver ";
+		return "Mozilla/5.0 (X11; Linux i586; rv:" . rand( 28, 35 ) . ".0) $ver ";
+	case 'lin2':
+		return "Mozilla/" . rand( 4, 5 ) . "." . rand( 1, 8 ) . " (X11; Linux i686; rv:" . rand( 29, 35 ) . ".0) $ver ";
 	case 'mac':
 		$osx = osx_version();
-		return "Mozilla/5.0 (Macintosh; Intel Mac OS X $osx) rev:$ver Safari/7046A194A";
+		return "Mozilla/5.0 (Macintosh; Intel Mac OS X $osx) $ver Safari/" . rand( 600, 740 ) . "A" . rand( 112, 199 ) . "A";
 	} 
 }
+/*
+Mozilla/5.0 (X11; U; Linux i686; en-GB; rv:1.9.0.9) Gecko/2009042113 Ubuntu/9.04 (jaunty) Firefox/3.0.9
+Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.04506.30; .NET CLR 3.0.04506.648; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)
+
+*/
 function randagent(){
-	$arrsch = array_random(array('lin','mac'));
+	$arrsch = array_random(array('lin','mac','lin2'));
 	//echo "$arrsch\n";
 	return firefox($arrsch);
 }

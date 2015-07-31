@@ -12,13 +12,13 @@ Copyright {2015} {Ahmed Alarbi}
    See the License for the specific language governing permissions and
    limitations under the License.
 Don't delete this, respect the coder who shared it for free.
-Title: 3Turr ~ CPanel Cracker
 By: 3Turr
 Contact: facebook.com/ahmed.f.alarbi
 note: This script is the fastest cracker for CPanels you can run.
 */
 include_once('./functions.php');
 include_once('./agents.php');
+include_once('./csqli.php');
 //## Functions
 function arguments($argvx) 
 {
@@ -62,6 +62,8 @@ array(
 	8 => 'tp',
 	9 => 'proxy',
 	10 => 'feach',
+	11 => 'nor',
+	12 => 'csqli',
 );
 $options2 = 
 array(
@@ -76,6 +78,9 @@ array(
 	8 => 'torport',
 	9 => 'proxy',
 	10 => 'foreach',
+	11 => 'norepeat',
+	12 => 'checksqli',
+
 );
 
 $option = array();
@@ -120,9 +125,12 @@ if(isset($option['sdomine']) && @filter_var(@gethostbyname($option['sdomine']),F
 		$dork = '*\.'.$option['sdomine'];
 	}
 }
-( isset($option['output']) && @fopen($option['output'],'w+') == true) ? $outf = @fopen($option['output'],'a+') : $outf  = 0 ;
-( isset($option['subdomins']) && filter_var(@gethostbyname($option['subdomins']),FILTER_VALIDATE_IP) == true ) ? $subdomins = $option['subdomins'] :$subdomins = 0 ;
+
+( isset($option['norepeat']) && $option['norepeat'] == 'true' ) ? $norepeat = 1 : $norepeat = 0 ;
+//output is down .
+( isset($option['subdomins']) && explode('.',$option['subdomins']) == true ) ? $subdomins = $option['subdomins'] :$subdomins = false ;
 ( isset($option['hostonly'])  && $option['hostonly'] == 'true' ) ? $hostonly = 1 : $hostonly = 0 ;
+( isset($option['checksqli'])  && $option['checksqli'] == 'true' ) ? $checksqli = 1 : $checksqli = 0 ;
 ( isset($option['domineonly']) && $option['domineonly'] == 'true' ) ? $domineonly = 1 : $domineonly = 0 ;
 if(isset($option['torport']) && isset($option['tor'])){
 	if($option['torport'] != 9150 &&  $option['torport'] != 'true' && is_numeric($option['torport'])){
@@ -163,25 +171,48 @@ if( isset($option['foreach']) ){
 //helpm();
 //helpe();
 $pause = array(300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1800,1900,2000,2200,2100,2300,2500,2700,2800,2900,3000,3200,3100,3300,3500,3700,3800,3900);
+
+if ($subdomins !== false){
+	$dork = 'site:*.'.$subdomins.' -site:www.'.$subdomins;
+}
 if ($dork != ''){
 	$dork = urlencode($dork);
 }else{
 	helpe('Please insert a dork.');
 }
+
+if (isset($option['output'])){
+	if (!is_file($option['output'])){
+		file_put_contents($option['output'], '[+]======== GGoogr ~ By 3Turr ========[+]
+Dork:'.urldecode($dork).'
+', FILE_APPEND);
+	}elseif (is_file($option['output'])){
+		file_put_contents($option['output'], '
+[+]===================================[+]
+Dork:'.urldecode($dork).'
+', FILE_APPEND);
+	}
+	( isset($option['output']) && @fopen($option['output'],'a+') == true) ? $outf = @fopen($option['output'],'a+') : $outf  = 0 ;
+}else{$outf  = 0;}
+
+
+
+
 $numofres = 0;
-for ($i = 0;$i <= 4000 ; $i+=100){
+for ($i = 0;$i <= 4000 ; $i+=60){
 	
-	$numofres = 0;
+	//$numofres = 0;
 	if (in_array($i,$pause)){echo "[!] pusing";for($x=0;$x<=20;$x++){echo".";sleep(1);}echo "\n";}
 	if (isset($proxy) && $proxy != 0){
 		//echo $proxy;
-		$googout =  gcurl('http://www.google.com/search?q='.($dork).'&hl=en&meta=&start='.$i.'&filter=0&biw=1360&bih=643&num=50',$proxy); 
+		$googout =  gcurl('http://www.google.com/search?q='.($dork).'&hl=en&meta=&start='.$i.'&filter=0&biw=1360&bih=643&num=60',$proxy); 
 		if ($googout == null){helpe("No Data resived from the Proxy server.");}
+		echo "[+] connction succeed.\n";
 	}else{
-		$googout =  gcurl('https://www.google.com/search?q='.($dork).'&hl=en&meta=&start='.$i.'&filter=0&biw=1360&bih=643&num=50'); 
+		$googout =  gcurl('https://www.google.com/search?q='.($dork).'&hl=en&meta=&start='.$i.'&filter=0&biw=1360&bih=643&num=60'); 
 	}
 	if(eregi('302 Moved',$googout)){
-		$googout =  gcurl('https://www.google.com/search?q='.($dork).'&hl=en&meta=&start='.$i.'&filter=0&biw=1360&bih=643&num=50');
+		$googout =  gcurl('https://www.google.com/search?q='.($dork).'&hl=en&meta=&start='.$i.'&filter=0&biw=1360&bih=643&num=60');
 	}
 	//var_dump($googout);
 	if(eregi('No results found for ',$googout) || $googout == ''){
@@ -190,41 +221,63 @@ for ($i = 0;$i <= 4000 ; $i+=100){
 	if (eregi('type the characters below',$googout)){
 		echo "\r\n[ERROR] GOOGLE HAD BAN YOU !\r\n[+] Please enter a proxy. EX: 127.0.0.1:80\r\n[+] Enter anything to wait for 5 minutes.\r\n[*]: ";
 		$proxyin=forcein(1);
-		if (testproxyin($proxyin)){
-			$proxy = $proxyin;
-		}else{
-			echo "Pauseing for 5 minutes...";sleep(600);
-		}
+		$proxy = proxyxin($proxyin);
+
 		
 	}
 	$resnum = ggrap($googout , 'id="resultStats">About ', " results",1) or 0;
-	if ($i == 0){echo "[+] Results: $resnum \n";}
-	sleep(1);
+	if ($i == 0){
+		echo "[*] Dork: ".urldecode($dork)." \r\n";
+		echo "[*] Results: $resnum \r\n\r\n";
+	}elseif($subdomins !== false){
+		$dork = '*'.$subdomins;
+	}
+	//###########################HERE
+	//sleep(1);
+	@preg_match_all("/<li class=\"g\"><h3 class=\"r\"><a href=\"\/url\?q=(.*)&amp;/iU", $googout, $regsw);
+	//var_dump($regsw[1]);
+	//break;
+	if ($norepeat == 1 || $subdomins !== false){
+		$allsiteslist = array_unique($regsw[1]);
+		unset($regsw);
+	}else{
+		$allsiteslist = $regsw[1];
+		unset($regsw);
+	}
 	
-	for($x=1;$x<=100;$x++){
-		$sitelist = ggrap($googout,'<li class="g"><h3 class="r"><a href="/url?q=', '&amp;',$x);
+	
+	foreach($allsiteslist as $sitelist){
+		$sitelist = urldecode($sitelist);
+		//$sitelist = ggrap($googout,'<li class="g"><h3 class="r"><a href="/url?q=', '&amp;',$x); // an old code
 		//echo "\r\n $sitelist \r\n";
 		
 		if ($sitelist != null && $sitelist != ''){
-			if($domineonly == true){
+			if($domineonly === 1){
 				$sitelist = parse_url($sitelist); // scheme , host
 				$sitelist = $sitelist['scheme'].'://'.$sitelist['host'].'/';
-			}elseif(isset($hostonly) && $hostonly == 1){
+			}elseif($hostonly === 1 || $subdomins !== false){
 				$sitelist = parse_url($sitelist); // scheme , host
 				$sitelist = $sitelist['host'];
-			}elseif(isset($subdomins) && eregi($subdomins,$sitelist)){
+			}elseif(isset($subdomins) && $subdomins != 0 && eregi($subdomins,$sitelist)){
 				$sitelist = parse_url($sitelist); // scheme , host
-				$sitelist = $sitelist['scheme'].'://'.$sitelist['host'].'/';
+				$sitelist = $sitelist['host'];
 			}else{
 				$sitelist = $sitelist;
 			}
-			echo '[+] '.$sitelist."\n";
 			
+			if ($checksqli == 1){
+				if (csqli($sitelist."\'") == 'yes'){
+					echo '[SQLI] '.$sitelist."\n";
+				}else{
+					echo '[+] '.$sitelist."\n";
+				}
+			}else{
+				echo '[+] '.$sitelist."\n";
+			}
 			$numofres = $numofres+1;
 			
 			if($outf){
-				fwrite($outf,"$sitelist
-");
+				fwrite($outf,$sitelist."\n");
 			}
 			if($foreach){
 				echo @shell_exec(@str_replace('DOMINE',$sitelist,$foreach));
@@ -236,18 +289,28 @@ for ($i = 0;$i <= 4000 ; $i+=100){
 	}
 	
 	
-	
+	if (isset($option['output']) && is_file($option['output']) && ($norepeat == 1 || $subdomins !== false) ){
+		fclose($outf);
+		$nore = array_unique(@explode("\n",@file_get_contents($option['output'])));$outnum = count($nore);
+		for($f=0;$f<=count($nore);$f++){
+			$nore[$f] = trim($nore[$f]);
+		}
+		file_put_contents($option['output'],'Resualts: '.$outnum."\n".implode("\n",$nore));
+		unset($nore);
+		$outf = @fopen($option['output'],'a+');
+	}
 	$pnum = $i/100+1;
 	@flush();@ob_clean();@ob_flush();		
 	echo "\n[+] Break, Page($pnum) : $numofres\r\n\n";
 	
 	//In order to show you the most relevant results
-	
+	sleep(2);
+}	
 
-}
+
 if($outf){
-		fclose($outf);
-	}
+	@fclose($outf);
+}
 //var_dump($inargs);
 
 
